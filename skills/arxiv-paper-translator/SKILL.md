@@ -16,7 +16,7 @@ Translate academic papers from arXiv by downloading LaTeX source, translating co
 4. **Compile** - Generate translated PDF using XeLaTeX
 5. **Report** - Create technical summary document
 
-## 环境检查
+## Prerequisites
 
 Check local xelatex installation:
 ```bash
