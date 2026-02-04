@@ -56,6 +56,11 @@ Deep learning has revolutionized computer vision.
 
 ## What NOT to Translate
 
+### 🚯 Quick Decision Rule
+
+If the content is **machine-executable** (code, formulas, command outputs),
+do NOT translate it. Only translate narrative content meant for human readers.
+
 ### ❌ Never Translate
 
 1. **Mathematical formulas and equations**
@@ -75,7 +80,7 @@ Deep learning has revolutionized computer vision.
    \end{figure}
    ```
 
-3. **Code listings**
+3. **Content in lstlisting and minted blocks**
    ```latex
    % Code remains in English
    \begin{lstlisting}[language=Python]
@@ -83,7 +88,26 @@ Deep learning has revolutionized computer vision.
        return model.fit(data, epochs=epochs)
    \end{lstlisting}
    ```
-   Exception: Translate code comments if they're meant for explanation
+   
+   ```latex
+   % Skip translation for lstlisting block
+   \begin{lstlisting}[style=snippet,caption={\textbf{System prompt: Tool use}}]
+   You are a helpful function-calling AI assistant. You are provided with function signatures within <functions></functions> XML tags. You may call one or more functions to assist with the user query. Output any function calls within <function_calls></function_calls> XML tags. Do not make assumptions about what values to plug into functions.
+   \end{lstlisting}
+   ```
+
+   ```latex
+   % Skip translation for minted block
+   \begin{minted}[
+      ]{markdown}
+Runtime Error
+ZeroDivisionError: division by zero
+Line 73 in separateSquares (Solution.py)
+
+Last Executed Input
+[[26,30,2],[11,23,1]]
+   \end{minted}
+   ```
 
 4. **Algorithm pseudocode structure**
    ```latex
@@ -126,7 +150,13 @@ Deep learning has revolutionized computer vision.
    \ref{fig:architecture}
    \cite{lecun2015deep}
    ```
-
+9. **Inline expressions and code**
+   ```latex
+   % Keep unchanged
+   $E = mc^2$
+   \texttt{code}
+   \verb|code|
+   ```
 ## Special Cases
 
 ### Tables
