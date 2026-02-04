@@ -1,0 +1,50 @@
+# Makefile for XeLaTeX compilation with Chinese support
+# Usage:
+#   make pdf       - Compile PDF with bibliography
+#   make clean     - Remove auxiliary files
+#   make distclean - Remove all generated files including PDF
+
+# Main tex file (change if your main file has a different name)
+MAIN = main
+
+# Compiler
+LATEX = xelatex
+BIBTEX = bibtex
+
+# Default target
+.DEFAULT_GOAL := pdf
+
+# Compile PDF with bibliography
+pdf: $(MAIN).tex
+	$(LATEX) $(MAIN).tex
+	$(BIBTEX) $(MAIN)
+	$(LATEX) $(MAIN).tex
+	$(LATEX) $(MAIN).tex
+
+# Quick compile without bibliography (faster for drafts)
+draft: $(MAIN).tex
+	$(LATEX) $(MAIN).tex
+
+# Clean auxiliary files
+clean:
+	rm -f *.aux *.log *.out *.bbl *.blg *.toc *.lof *.lot *.fls *.fdb_latexmk
+	rm -f *.synctex.gz *.brf *.nav *.snm *.vrb
+
+# Remove all generated files including PDF
+distclean: clean
+	rm -f $(MAIN).pdf
+
+# Help message
+help:
+	@echo "Available targets:"
+	@echo "  make pdf       - Compile PDF with bibliography (default)"
+	@echo "  make draft     - Quick compile without bibliography"
+	@echo "  make clean     - Remove auxiliary files"
+	@echo "  make distclean - Remove all generated files including PDF"
+	@echo "  make help      - Show this help message"
+	@echo ""
+	@echo "Docker usage:"
+	@echo "  docker run --rm -v \$$(pwd):/workspace -w /workspace \\"
+	@echo "    ghcr.1ms.run/xu-cheng/texlive-debian:20260101 make pdf"
+
+.PHONY: pdf draft clean distclean help
