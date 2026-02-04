@@ -1,6 +1,7 @@
 ---
 name: arxiv-paper-translator
 description: Translate academic papers from arXiv to Chinese. Use when users want to (1) translate arXiv papers from English to Chinese, or (2) create technical reports summarizing academic papers. Works with arXiv paper IDs like "2206.04655".
+license: MIT
 ---
 
 # arXiv Paper Translator
@@ -45,10 +46,11 @@ Download and extract source code from arXiv:
 ```bash
 # Download LaTeX source (replace ARXIV_ID with user-specified paper ID)
 ARXIV_ID="2206.04655"
+# Working Directory
+mkdir -p arXiv_${ARXIV_ID}
+cd arXiv_${ARXIV_ID}
 wget https://arxiv.org/e-print/${ARXIV_ID} -O paper_source.tar.gz
-
-# Extract to directory
-mkdir -p paper_source
+mkdir paper_source
 tar -xzf paper_source.tar.gz -C paper_source
 cd paper_source
 ```
@@ -72,28 +74,30 @@ find . -name "*.tex"
 
 ### Translation Process
 
-1. **Find all .tex files**:
+1. **Copy all non-.tex files** from `paper_source/` to `paper_cn/`:
    ```bash
-   find . -name "*.tex" -type f
+   # Change to Working Directory
+   cd arXiv_${ARXIV_ID}
+   mkdir -p paper_cn
+   cp -rv paper_source/* paper_cn/ 2>/dev/null || true
+   # remove all .tex files from paper_cn/
+   find ./paper_cn -name "*.tex" -type f -exec rm -f {} \;
+   # .tex files will be translated later
    ```
 
-2. **Read each .tex file** and translate content according to guidelines
-
-3. **Save translations** to new directory `paper_cn/`:
+2. **Find all .tex files**:
    ```bash
-   mkdir -p ../paper_cn
-   # Preserve directory structure
+   find ./paper_source -name "*.tex" -type f
    ```
 
-4. **Copy non-text files** as-is:
-   ```bash
-   # Copy images, bibliography, style files
-   cp -r figures/ ../paper_cn/ 2>/dev/null || true
-   cp -r images/ ../paper_cn/ 2>/dev/null || true
-   cp *.bib ../paper_cn/ 2>/dev/null || true
-   cp *.sty ../paper_cn/ 2>/dev/null || true
-   cp *.cls ../paper_cn/ 2>/dev/null || true
-   ```
+2. **Read each .tex file** and translate content according to guidelines.
+
+3. **Save translations** to new directory `paper_cn/`, e.g.:
+  ```
+  paper_source/main.tex -> paper_cn/main.tex
+  ```
+  NOTICE: Just copy .tex files that has no content to translate (e.g. only commands, citations, or empty files).
+
 
 ### Parallel Translation for Large Papers
 
@@ -107,9 +111,9 @@ If paper has many .tex files or sections, spawn subagents to translate multiple 
 # Agent 4: Translate conclusion and appendix
 ```
 
-Subagent should follow the prompt in [references/translation_prompt.md](references/translation_prompt.md)
-
 This significantly speeds up translation of papers with many .tex files or sections.
+
+When spawning subagents, each subagent should follow the prompt in [references/translation_prompt.md](references/translation_prompt.md) and add the title and abstract of the paper for context-awareness.
 
 Make sure each subagent follows the translation guidelines and handles a single .tex file or section.
 
@@ -117,16 +121,20 @@ Make sure each subagent follows the translation guidelines and handles a single 
 
 Before compiling, check:
 
-```bash
-cd ../paper_cn
-
-# Verify all .tex files translated
-find . -name "*.tex" | wc -l
-# Compare with original count
-
-# Verify non-text files copied
-ls figures/ images/ *.bib *.sty 2>/dev/null
-```
+- Verify all `.tex` files translated from `paper_source/` are in `paper_cn/`
+  ```
+  # working dir: arXiv_${ARXIV_ID}
+  find ./paper_source -name "*.tex" -type f
+  find ./paper_cn -name "*.tex" -type f
+  # Compare the two lists to verify all files are translated
+  ```
+- Verify all non-text files (e.g.figures, images, .bib, .sty) copied to `paper_cn/`
+  ```
+  # working dir: arXiv_${ARXIV_ID}
+  find ./paper_source -type f ! -name "*.tex"
+  find ./paper_cn -type f ! -name "*.tex"
+  # Compare the two lists to verify all non-text files are copied
+  ```
 
 **Manual check**: Read through main .tex file to ensure:
 - [ ] All sections translated
@@ -273,7 +281,7 @@ iconv -f ISO-8859-1 -t UTF-8 file.tex > file_utf8.tex
 ```
 
 ### Issue: Paper uses custom .sty or .cls files
-- Always copy custom style files to paper_cn/
+- Always copy non-`.tex` files (e.g. figures, images, .bib, .sty) to `paper_cn/`
 - Check if styles have hard-coded English text that needs translation
 
 ## Tips for High-Quality Translation
