@@ -4,6 +4,17 @@
 
 > Skills follow the [Agent Skills](https://agentskills.io/) format.
 
+## Features
+
+- 下载指定 arXiv 论文的 LaTeX 源代码
+- **保留原始的样式**: 基于原始的 LaTeX 源代码，翻译后的中文论文保留了原始的样式和格式。
+- **可以指定翻译的章节**: 你可以在Agent执行翻译时指定要翻译的章节，而不是整个论文。
+
+> [!NOTE]
+> 如果你需要的是**PDF 文件**翻译
+> 推荐你直接使用 [PDFMathTranslate](https://github.com/PDFMathTranslate)
+
+
 ## 前置条件（二选一）
 
 1. 可以运行 `xelatex` 工具用于编译 LaTeX 文档。
