@@ -37,5 +37,6 @@ Read the source file, translate its content, and write to the target file.
 - **严禁修改 LaTeX 命令拼写**。翻译时只改文本内容，不要"翻译"或改写任何 `\command`。如不确定某个命令是否正确，保持原样。
 - **自定义宏后紧跟中文时必须加 `{}`**。例如 `\xmax概率` 必须写成 `\xmax{}概率`，否则 xeCJK 会把宏名和中文字符合并解析导致编译失败。
 - **不翻译代码块内容**。`lstlisting`、`minted`、`verbatim` 等环境内的所有内容保持原文，包括英文注释和输出信息。仅翻译这些环境的 `caption` 参数。
+- **不翻译表格中的原始数据**。单元格内容如果是代码、AI 查询/回复、traceback、用户输入示例等原始数据，保持英文原文。只翻译 caption 和描述性表头。判断标准：内容是"证据/数据"而非"叙述"则不翻译。
 
 ```

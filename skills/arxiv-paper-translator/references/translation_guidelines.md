@@ -110,7 +110,11 @@ Last Executed Input
    \end{minted}
    ```
 
-4. **Algorithm pseudocode structure**
+4. **Raw data in tables** (AI queries, code, traceback, user input examples)
+   - Keep cell content in English, only translate caption and descriptive headers
+   - Rule of thumb: "evidence/data" → don't translate; "narrative" → translate
+
+5. **Algorithm pseudocode structure**
    ```latex
    % Keep structure, translate only necessary keywords/comments
    \begin{algorithm}

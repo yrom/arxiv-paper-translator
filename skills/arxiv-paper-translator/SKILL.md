@@ -95,6 +95,8 @@ If paper has many .tex files, dispatch translation tasks (subagents to translate
 
 Follow [references/chinese_support.md](references/chinese_support.md) to configure.
 
+**IMPORTANT**: Ask user for font preference (Fandol / 霞鹜文楷 / user provided font) before configuring.
+
 ## Step 5: Compile Translated PDF
 
 ### Option 1: Local XeLaTeX
@@ -115,6 +117,8 @@ latexmk -xelatex main.tex
 ### Option 2: Docker with TeX Live
 
 ```bash
+# change working directory to arXiv_${ARXIV_ID}
+cd /path/to/arXiv_${ARXIV_ID}
 docker run --rm \
   -v "$(pwd)/paper_cn":/workspace \
   -w /workspace \
@@ -144,6 +148,7 @@ Spawn a subagent following [references/summary_prompt.md](references/summary_pro
 | Command misspelling (e.g. `\footnotext`) | See review checklist step 2 — diff command sets to find typos |
 | Undefined control sequence | xeCJK catcode issue — insert `{}` to separate custom macro from CJK text → `\xmax{}概率` |
 | Custom .sty/.cls files | Copy to `paper_cn/`, check for hard-coded English text |
+| `Missing $ inserted` in translated tables | 表格中原始数据（代码、traceback、AI 查询）不应翻译，中英混排导致 xeCJK 字体切换出错 |
 
 ## References
 
