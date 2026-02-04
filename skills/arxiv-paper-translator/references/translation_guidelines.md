@@ -26,6 +26,7 @@ This document provides detailed guidelines for translating academic papers from 
 
 3. **Comments for readers**
    - Footnotes: `\footnote{...}`
+   - Author footnotes: `\thanks{...}`
    - Margin notes meant for reading
 
 4. **Bibliography context (optional)**
@@ -279,16 +280,7 @@ paper_cn/              # Translated
 
 ## Translation Quality Checklist
 
-Before compiling, verify:
-
-- [ ] All `.tex` files with content are translated
-- [ ] All non-text files (images, bibfiles, styles) are copied
-- [ ] LaTeX commands and environments unchanged
-- [ ] Math formulas unchanged
-- [ ] Labels and references unchanged
-- [ ] File paths in `\input`, `\includegraphics` unchanged
-- [ ] Document structure preserved (sections, subsections)
-- [ ] Chinese text is natural and academically appropriate
+For detailed automated checks (file completeness, command spelling diff, CJK catcode scan, content spot-check), see [review_checklist.md](review_checklist.md).
 
 ## Handling Edge Cases
 
