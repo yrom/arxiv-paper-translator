@@ -10,6 +10,27 @@
 - **保留原始的样式**: 基于原始的 LaTeX 进行翻译, 编译PDF 可以保留原始的样式和格式。
 - **可以指定翻译的章节**: 你可以在Agent执行翻译时指定要翻译的章节，而不是整个论文。
 
+### 翻译结果示例：
+
+<table>
+  <tr>
+    <td>
+      <img width="516" alt="original" src="https://github.com/user-attachments/assets/f727d06a-580a-48b8-87aa-a2eae34d146c" />
+    </td>
+    <td>
+      <img width="516"  alt="translated" src="https://github.com/user-attachments/assets/a75551c7-eb07-4211-a1fd-548739e4a771" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img width="533" alt="original" src="https://github.com/user-attachments/assets/5bf1604c-51d7-4912-82a2-500cbbcf8907" />
+    </td>
+    <td>
+      <img width="533" alt="translated" src="https://github.com/user-attachments/assets/a72ab10f-f418-484a-bc13-e6cf4e72095f" />
+    </td>
+  </tr>
+</table>
+
 > [!NOTE]
 > 如果你需要的是**PDF 文件**翻译，推荐你直接使用 [PDFMathTranslate](https://github.com/PDFMathTranslate/PDFMathTranslate)
 
