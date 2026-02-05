@@ -7,12 +7,11 @@
 ## Features
 
 - 下载指定 arXiv 论文的 LaTeX 源代码
-- **保留原始的样式**: 基于原始的 LaTeX 源代码，翻译后的中文论文保留了原始的样式和格式。
+- **保留原始的样式**: 基于原始的 LaTeX 进行翻译, 编译PDF 可以保留原始的样式和格式。
 - **可以指定翻译的章节**: 你可以在Agent执行翻译时指定要翻译的章节，而不是整个论文。
 
 > [!NOTE]
-> 如果你需要的是**PDF 文件**翻译
-> 推荐你直接使用 [PDFMathTranslate](https://github.com/PDFMathTranslate)
+> 如果你需要的是**PDF 文件**翻译，推荐你直接使用 [PDFMathTranslate](https://github.com/PDFMathTranslate/PDFMathTranslate)
 
 
 ## 前置条件（二选一）
@@ -34,6 +33,8 @@ npx skills add yrom/arxiv-paper-translator
 
 ```md
 > Use arxiv paper translator SKILL. 翻译arXiv的论文为中文，ID 为：2601.20245
+
+> 翻译arxiv:2602.02276 为中文。跳过附录（Appendix）、还有实验eval部分不用翻译。
 
 > /arxiv-paper-translator 翻译arXiv:2601.20802 为中文，同时整理核心观点输出一份中文博客用于分享
 ```

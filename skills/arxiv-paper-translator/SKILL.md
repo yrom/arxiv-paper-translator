@@ -9,15 +9,14 @@ license: MIT
 Translate academic papers from arXiv by downloading LaTeX source, translating content while preserving structure, and generating translated PDFs with technical reports.
 
 ## Workflow Overview
-
 1. **Download & Extract** - Get LaTeX source from arXiv
-2. **Translate** - Convert English text to Chinese following LaTeX-specific rules
-3. **Review** - Spawn reviewer subagent to check translation quality
-4. **Chinese Support** - Add xeCJK, localize labels
-5. **Compile** - Generate translated PDF using XeLaTeX
+2. **Translate** - Translate English narrative content to Chinese following LaTeX-specific rules
+3. **REVIEW PHASE** - **MUST COMPLETE** before compiling
+4. **CJK Support & Localize Labels** - Add xeCJK, localize labels
+5. **Compile .tex Files** - Generate translated PDF using XeLaTeX
 6. **Report** - Create technical summary document
 
-## 环境检查
+## Prerequisites
 
 Check local xelatex installation:
 ```bash
@@ -32,25 +31,28 @@ This skill requires XeLaTeX to compile translated PDFs. If not installed locally
 
 Recommend using [xu-cheng/latex-docker](https://github.com/xu-cheng/latex-docker) Docker images.
 
-```sh
-# e.g. Tex Live full distribution (only linux/amd64).
+e.g. Tex Live full distribution (only linux/amd64):
+
+```bash
 # NOTICE: ghcr.1ms.run is a mirror of ghcr.io.
 docker pull ghcr.1ms.run/xu-cheng/texlive-debian:20260101 --platform linux/amd64
+# => docker pull ghcr.io/xu-cheng/latex-debian:20260101 --platform linux/amd64
 ```
 
-**If both local XeLaTeX and Docker are not installed, then STOP trying to run this skill.** And recommend user to install XeLaTeX or Docker.
+**If both local XeLaTeX and Docker are not installed, then STOP trying to run this skill.** 
+And Ask user question: "XeLaTeX or Docker is required to compile translated PDFs. Which one do you want to use? I'll help you to setup."
 
 ## Step 1: Download LaTeX Source
 
-Download and extract source code from arXiv:
+Extract ARXIV_ID from user input.
 
-All subsequent commands assume **working directory is `arXiv_${ARXIV_ID}`**.
+Download and extract source code from arXiv:
 
 ```bash
 # Download LaTeX source (replace ARXIV_ID with user-specified paper ID)
 ARXIV_ID="2206.04655"
 mkdir -p arXiv_${ARXIV_ID}
-wget https://arxiv.org/e-print/${ARXIV_ID} -O arXiv_${ARXIV_ID}/paper_source.tar.gz
+wget -q https://arxiv.org/e-print/${ARXIV_ID} -O arXiv_${ARXIV_ID}/paper_source.tar.gz
 mkdir -p arXiv_${ARXIV_ID}/paper_source
 tar -xzf arXiv_${ARXIV_ID}/paper_source.tar.gz -C arXiv_${ARXIV_ID}/paper_source
 ```
@@ -58,44 +60,110 @@ tar -xzf arXiv_${ARXIV_ID}/paper_source.tar.gz -C arXiv_${ARXIV_ID}/paper_source
 **Verify extraction:**
 ```bash
 # List files to understand structure
-ls -R arXiv_${ARXIV_ID}/paper_source
-# Identify main .tex file (usually main.tex, paper.tex, or ms.tex)
-find arXiv_${ARXIV_ID}/paper_source -name "*.tex"
+tree arXiv_${ARXIV_ID}/paper_source
 ```
 
 ## Step 2: Translate LaTeX Files
 
 **IMPORTANT**: Before translating, read [references/translation_guidelines.md](references/translation_guidelines.md) for detailed rules.
 
-### Translation Process
+### Translation Workflow
 
-1. **Copy all non-.tex files** from `paper_source/` to `paper_cn/`:
-   ```bash
-   cd arXiv_${ARXIV_ID}
-   mkdir -p paper_cn
-   cp -rv paper_source/* paper_cn/ 2>/dev/null || true
-   find ./paper_cn -name "*.tex" -type f -exec rm -f {} \;
-   ```
+Step 2.1. **Copy all files** from `paper_source/` to `paper_cn/`:
 
-2. **Find all .tex files** and translate content according to guidelines. **确保每个含可读文本的 .tex 文件都被翻译，不得遗漏。**
+Option 1 - Using cp (standard):
+```bash
+cd arXiv_${ARXIV_ID}
+mkdir -p paper_cn
+cp -r paper_source/* paper_cn/
+```
 
-3. **Save translations** to `paper_cn/`. 纯命令/宏定义/引用的 .tex 文件（无需翻译）直接复制原文。
+Option 2 - Using rsync (better for incremental sync):
+```bash
+cd arXiv_${ARXIV_ID}
+mkdir -p paper_cn
+rsync -av paper_source/ paper_cn/
+```
 
-### Parallel Translation for Large Papers
+All .tex files in `paper_cn/` will be translated in-place later.
 
-If paper has many .tex files, dispatch translation tasks (subagents to translate) in parallel. Each Task should follow [references/translation_prompt.md](references/translation_prompt.md).
+Step 2.2. Gather Context (MANDATORY):
 
-**IMPORTANT**: 派发每个翻译 subagent 前，你必须填入 prompt 模板中的所有 `[填入]` 字段：Paper Title、Abstract、Paper Structure（章节概述 + 当前文件属于哪个章节）、Key Terminologies。subagent 无法访问你的上下文，这些信息只有你能提供。
+Before ANY translation, you MUST extract:
+1. **Paper Title**: From `\title{...}` in main file
+2. **Abstract**: From `\begin{abstract}...\end{abstract}` or `\abstract{...}` in main file
+3. **Paper Structure**: List all sections and which .tex file contains each    
+4. **Key Terminologies**: Build terminology table from paper content
+
+For some glossaries or terminologies you don't know how to translate, you can ASK user question for definition.
+
+This information is REQUIRED for translation tasks.
+
+Read [references/translation_prompt.md](references/translation_prompt.md) for detailed translation rules.
+
+Step 2.3. Dispatch Translation Tasks
+
+**Identify files to translate**:
+
+- Find main file (contains \documentclass{...}, usually main.tex, paper.tex, template.tex, etc.)
+- Filter .tex files that need translation (skip macro-only files if any, or user specified files)
+- Create list of files to translate
+
+**Translation Strategy**:
+
+1. **Translate main file first** (sequential)
+   - Builds shared terminology context
+   - Ensures consistency for other files
+
+2. **Translate other files**:
+   - If 3+ files: Dispatch in parallel
+   - If 1-2 files: Sequential translation
+
+**Each translation Task**:
+- Task type: general-purpose subagent
+- Input: File path in `paper_cn/` directory
+- Action: Read file → Translate → Edit file (Update file content with translated text)
+- Must follow [references/translation_prompt.md](references/translation_prompt.md)
+- Must use gathered context (title, abstract, structure, terminologies)
+
+**Example command to find main .tex file**:
+```bash
+find paper_cn/ -name "*.tex" -exec grep -l '\\documentclass' {} \; | head -1
+```
 
 ## Step 3: Review Translation
 
-所有翻译 subagent 完成后，**你自己执行** [references/review_checklist.md](references/review_checklist.md) 中的检查步骤。逐条运行命令，分析输出，修复发现的问题。
+After all translation Tasks are completed, you MUST review the translated content following [references/review_checklist.md](references/review_checklist.md) to verify:
+
+1. **File Completeness Check**
+2. **LaTeX Command Spelling**
+3. **CJK Catcode Issues**
+4. **Translation Quality Check**
+5. **Content Spot-Check**
+
+Perform fixes as needed based on review findings.
+
+**CRITICAL**: Before proceeding to Step 4, you must confirm:
+- [ ] All review checks completed
+- [ ] Any issues identified and fixed
+- [ ] Translation quality verified
 
 ## Step 4: Add Chinese Support
 
-Follow [references/chinese_support.md](references/chinese_support.md) to configure.
+**IMPORTANT**: Follow [references/chinese_support.md](references/chinese_support.md) to configure CJK fonts and localize labels.
 
-**IMPORTANT**: Ask user for font preference (Fandol / 霞鹜文楷 / user provided font) before configuring.
+Modify main .tex file to include xeCJK package and set CJK fonts.
+
+e.g. for Fandol font (which is included in TexLive Docker image):
+
+```latex
+\usepackage{xeCJK}
+\setCJKmainfont{FandolSong}[ItalicFont=FandolKai]  % 宋体 - 正文，\emph 用楷体
+\setCJKsansfont{FandolHei}    % 黑体 - 标题、\textsf
+\setCJKmonofont{FandolFang}   % 仿宋 - 代码、\texttt
+```
+
+If running locally, Ask user for font preference before configuring. Check available fonts with `fc-list :lang=zh family`.
 
 ## Step 5: Compile Translated PDF
 
@@ -110,7 +178,10 @@ xelatex main.tex
 bibtex main
 xelatex main.tex
 xelatex main.tex
-# or
+```
+Or use `latexmk` for automated compilation:
+
+```bash
 latexmk -xelatex main.tex
 ```
 
@@ -146,10 +217,11 @@ Spawn a subagent following [references/summary_prompt.md](references/summary_pro
 | Main file not named main.tex | `find . -name "*.tex" -exec grep -l "\\documentclass" {} \;` |
 | Compilation fails with encoding error | `file *.tex` to check, `iconv -f ISO-8859-1 -t UTF-8` to convert |
 | Command misspelling (e.g. `\footnotext`) | See review checklist step 2 — diff command sets to find typos |
-| Undefined control sequence | xeCJK catcode issue — insert `{}` to separate custom macro from CJK text → `\xmax{}概率` |
+| Undefined control sequence - \xmax概率 | xeCJK catcode issue — insert `{}` to separate custom macro from CJK text → `\xmax{}概率` |
+| Undefined control sequence - \chinese{弋} | Original uses CJK package's \chinese macro; add \newcommand{\chinese}[1]{#1} after xeCJK config to prevent catcode issue |
 | Custom .sty/.cls files | Copy to `paper_cn/`, check for hard-coded English text |
-| `Missing $ inserted` in translated tables | 表格中原始数据（代码、traceback、AI 查询）不应翻译，中英混排导致 xeCJK 字体切换出错 |
-
+| `Missing $ inserted` in translated tables | Mixed CJK/Latin characters may cause xeCJK font switching errors (e.g. `(xyz)` be treated as math mode), restore original content in table cells | 
+| Undefined references (e.g., `\ref{fig:joint-train}`) | Ensure ALL referenced files are present in `paper_cn/`, even if NOT translated files. | 
 ## References
 
 - **Translation rules**: [references/translation_guidelines.md](references/translation_guidelines.md)

@@ -75,3 +75,14 @@ Proof → 证明
 ```
 
 Prevents vertical stretching on pages with mixed CJK/math content.
+
+## Custom Command for CJK Text
+
+如果论文定义了自定义命令包裹 CJK 文本，修改为直接输出参数内容。避免与xeCJK冲突。
+
+```latex
+% before
+\newcommand{\chinese}[1]{\begin{CJK*}{UTF8}{gbsn}{#1}\end{CJK*}}
+% after
+\newcommand{\chinese}[1]{#1}
+```

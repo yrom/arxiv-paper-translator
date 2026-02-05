@@ -97,7 +97,7 @@ do NOT translate it. Only translate narrative content meant for human readers.
    \end{lstlisting}
    ```
 
-   ```latex
+```latex
    % Skip translation for minted block
    \begin{minted}[
       ]{markdown}
@@ -108,7 +108,7 @@ Line 73 in separateSquares (Solution.py)
 Last Executed Input
 [[26,30,2],[11,23,1]]
    \end{minted}
-   ```
+```
 
 4. **Raw data in tables** (AI queries, code, traceback, user input examples)
    - Keep cell content in English, only translate caption and descriptive headers
@@ -209,6 +209,8 @@ The loss function $\mathcal{L}$ measures the error.
 ### Acronyms
 
 First mention: provide both English and Chinese
+
+e.g.: 英文："mixture-of-experts (MoE)" → 中文翻译："混合专家（Mixture-of-Experts，MoE）"
 
 ```latex
 % Before

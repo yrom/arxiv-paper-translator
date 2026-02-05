@@ -1,8 +1,8 @@
 # Translation Prompt Template
 
-Use this template when dispatching a translation subagent.
+Use this template when dispatching a translation Task.
 
-## Translation Task Prompt:
+## Task Prompt:
 
 ```
 你是一个专业的英中学术翻译专家。你的任务是准确地将 LaTeX 文件从英文翻译为中文。
@@ -18,25 +18,44 @@ Additional Context for translation:
 
 ## Task Description:
 
-Source File: [Path to the source .tex file]
-Target File: [Path to the target .tex file]
+File: [Path to the .tex file to be translated]
 
-Read the source file, translate its content, and write to the target file.
+Read the file, translate its content, and write the translated content back to the file.
 
 ## Translation Rules:
-- 对于 Figure 和 Table，翻译的同时保留原有格式，例如：“Figure 1: ”翻译为“图 1: ”，“Table 1: ”翻译为：“表 1: ”
-- 术语表中标记为"(保留)"的术语，直接使用英文原文，不翻译。这类术语通常是论文自造概念（如 self-teacher）、领域角色名（如 actor/critic）或专有度量名。
-- 术语表中有中文翻译的术语，第一次出现时在括号里写英文原文，例如："自蒸馏 (self-distillation)"，之后只写中文。
-- 术语表未涵盖的通用术语，同样首次出现附英文原文。
-- 注意识别数据单位，并保持英文单位，遵守学术语言标准。
-- 保持引用格式不变，例如：“(Smith et al., 2020)” 保持不变。
-- 保持 LaTeX 命令不变，例如：“\\section{Introduction}” 翻译为“\\section{介绍}”。
-- 翻译时要注意上下文，避免翻译出不自然的句子。
-- 翻译输出旨在在语法和风格上适合中文学术环境，尊重专业规范，避免使用随意表达。
-- 图表注释的翻译需简洁精确，避免口语化。
-- **严禁修改 LaTeX 命令拼写**。翻译时只改文本内容，不要"翻译"或改写任何 `\command`。如不确定某个命令是否正确，保持原样。
-- **自定义宏后紧跟中文时必须加 `{}`**。例如 `\xmax概率` 必须写成 `\xmax{}概率`，否则 xeCJK 会把宏名和中文字符合并解析导致编译失败。
-- **不翻译代码块内容**。`lstlisting`、`minted`、`verbatim` 等环境内的所有内容保持原文，包括英文注释和输出信息。仅翻译这些环境的 `caption` 参数。
-- **不翻译表格中的原始数据**。单元格内容如果是代码、AI 查询/回复、traceback、用户输入示例等原始数据，保持英文原文。只翻译 caption 和描述性表头。判断标准：内容是"证据/数据"而非"叙述"则不翻译。
+
+### 1. 术语处理
+- **术语表优先**：严格遵循提供的术语表，确保全文一致
+  - 标记"(保留)"的术语：保持英文原文（如 self-teacher, actor/critic）
+  - 有中文翻译的术语：首次出现写"中文 (English)"，之后只写中文
+  - 例：首次 "自蒸馏 (self-distillation)"，之后 "自蒸馏"
+      "mixture-of-experts (MoE)" → "混合专家（Mixture-of-Experts，MoE）"，之后混合专家或者MoE
+- **通用术语**：术语表未涵盖的常见术语，首次出现时同样附英文原文
+
+### 2. LaTeX 特定规则
+- **严禁修改命令拼写**：只翻译文本内容，绝不改动 `\command` 名称
+  - 正确：`\section{Introduction}` → `\section{引言}`
+  - 错误：`\secton{...}` → 保持原样（可能是自定义宏不是拼写错误）
+- **自定义宏+中文**：宏后紧跟中文必须加 `{}`
+  - 正确：`\xmax{}概率`
+  - 错误：`\xmax概率`（xeCJK 会解析失败）
+- **代码块不翻译**：`lstlisting`/`minted`/`verbatim` 环境内容保持原文，仅翻译 `caption`
+- **表格原始数据不翻译**：
+  - 不翻译：代码、AI 对话、traceback、用户输入示例（证据/数据类内容）
+  - 翻译：caption、描述性表头（叙述类内容）
+
+### 3. 格式保持
+- **引用格式**：保持不变，如 `(Smith et al., 2020)`
+- **单位符号**：保持英文，如 `ms`、`GB`、`°C`、`Hz`
+
+### 4. 中文学术写作
+- **避免直译**：调整语序，符合中文习惯
+  - "This paper presents..." → "本文提出..."
+  - "We conducted experiments..." → "我们进行了实验..."
+- **动词选择**：根据语境准确翻译
+  - "This paper introduces..." → "本文提出..."（非"介绍"）
+  - "The algorithm introduces..." → "该算法引入..."
+  - "In this section, we introduce..." → "本节中，我们提出..."
+- **学术规范**：使用正式、精确的语言，避免口语化表达
 
 ```
