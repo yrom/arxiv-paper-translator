@@ -1,0 +1,16 @@
+{
+  "name": "convert-pdf-to-png",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI wrapper for pdf-to-png-converter",
+  "scripts": {
+    "convert": "node convert-pdf-to-png.mjs"
+  },
+  "dependencies": {
+    "pdf-to-png-converter": "^3.10.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
