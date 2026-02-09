@@ -19,17 +19,28 @@ This document provides detailed guidelines for translating academic papers from 
    - Section, subsection, chapter titles
    - Abstract and conclusion text
 
-2. **Captions and labels**
+2. **Paper title** — Translate text inside `\title{...}` / `\icmltitle{...}` and similar title commands
+
+3. **Captions and labels**
    - Figure captions: `\caption{...}`
    - Table captions
    - Algorithm/listing titles
 
-3. **Comments for readers**
+4. **Comments for readers**
    - Footnotes: `\footnote{...}`
    - Author footnotes: `\thanks{...}`
    - Margin notes meant for reading
 
-4. **Bibliography context (optional)**
+5. **Hard-coded English labels in conference/journal .sty/.cls**
+   - Check template files for visible English strings such as `Abstract`, `Equal contribution`, `Correspondence to:`, `Under review`, `Preprint`, etc.
+   - Override with `\renewcommand` or edit the .sty/.cls strings directly
+   ```latex
+   % Example: override ICML template label
+   \renewcommand{\icmlEqualContribution}{\textsuperscript{*}同等贡献 }
+   ```
+   - If no overridable command exists, edit the .sty/.cls copy in `paper_cn/` directly
+
+6. **Bibliography context (optional)**
    - Paper titles in `\bibitem` if desired
    - Keep original for traceability
 
@@ -129,10 +140,13 @@ Last Executed Input
    ```
 
 5. **Person names and proper nouns**
-   - Author names: John Smith → John Smith (不翻译)
-   - Institution names: MIT → MIT (保持原文或意译:麻省理工学院)
-   - Model names: ResNet, BERT → 保持原文
-
+   - Author names: keep as-is (John Smith → John Smith)
+   - Model names: keep original (ResNet, BERT)
+   - Institution names — follow these rules:
+     - Chinese institutions: use official Chinese name
+     - Well-known foreign institutions: use established Chinese translation
+     - Lesser-known institutions: keep original English name
+       - e.g. Tsinghua University → 清华大学, 
 6. **File paths and references**
    ```latex
    % Keep unchanged
@@ -210,7 +224,7 @@ The loss function $\mathcal{L}$ measures the error.
 
 First mention: provide both English and Chinese
 
-e.g.: 英文："mixture-of-experts (MoE)" → 中文翻译："混合专家（Mixture-of-Experts，MoE）"
+e.g.: English "mixture-of-experts (MoE)" → Chinese "混合专家（Mixture-of-Experts，MoE）"
 
 ```latex
 % Before
@@ -232,15 +246,10 @@ CNN具有很高的准确率。
 
 ### Comments in LaTeX Source
 
-Translate only if they're notes for understanding:
+Comments (`%`-prefixed lines) do not need translation — keep them as-is to save tokens.
 
 ```latex
-% Before
-% TODO: Add more experiments
-\section{Experiments}
-
-% After
-% TODO: 添加更多实验
+% TODO: Add more experiments  ← keep original, do not translate
 \section{实验}
 ```
 

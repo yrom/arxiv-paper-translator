@@ -60,9 +60,21 @@ For each .tex file, verify:
 
 For each .tex file, compare with source to verify:
 
+- [ ] Paper title (`\title{...}` / `\icmltitle{...}`) translated
 - [ ] `\thanks{...}`, `\footnote{...}`, `\footnotetext{...}` content translated
 - [ ] All section/subsection titles translated
 - [ ] Figure and table captions translated
 - [ ] LaTeX commands and math formulas unchanged
 - [ ] File paths (`\input`, `\includegraphics`) unchanged
 - [ ] Labels and references (`\label`, `\ref`, `\cite`) unchanged
+
+## 7. Template Hard-coded Labels
+
+Check .sty/.cls files in `paper_cn/` for visible English strings that should be localized:
+
+```bash
+grep -rnE '(Equal contribution|Correspondence to|Under review|Preprint|Proceedings of)' paper_cn/ --include='*.sty' --include='*.cls' --include='*.tex'
+```
+
+- [ ] Conference/journal template labels translated or overridden (e.g. `Equal contribution` → `同等贡献`)
+- [ ] Author affiliation/institution names handled (keep original or add Chinese translation)
