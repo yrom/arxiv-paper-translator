@@ -2,7 +2,7 @@
 
 ## 1. File Completeness
 
-- Verify all .tex files are tranlated or copied (skip files that are not translated)
+- Verify all .tex files are translated or copied (skip files that are not translated)
 ```bash
 diff <(cd paper_source && find . -name "*.tex" -type f | sort) \
      <(cd paper_cn && find . -name "*.tex" -type f | sort)

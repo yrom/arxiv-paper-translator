@@ -99,7 +99,7 @@ For some glossaries or terminologies you don't know how to translate, you can AS
 
 This information is REQUIRED for translation tasks.
 
-Read [references/translation_prompt.md](references/translation_prompt.md) for detailed translation rules.
+Read [references/translation_prompt.md](references/translation_prompt.md) for the prompt template.
 
 Step 2.3. Dispatch Translation Tasks
 
@@ -199,15 +199,15 @@ docker run --rm \
 
 ## Step 6: Generate Technical Report
 
-Spawn a subagent following [references/summary_prompt.md](references/summary_prompt.md) to create a technical summary using [assets/report_template.md](assets/report_template.md).
+If user requests a technical summary, spawn a subagent following [references/summary_prompt.md](references/summary_prompt.md) to create a technical summary using [assets/report_template.md](assets/report_template.md).
 
-**Save report**: `{arxiv_id}_technical_report.md`
+**Save report**: `arXiv_${ARXIV_ID}/technical_report.md`
 
 ## Final Deliverables
 
-1. **Translated PDF**: `paper_cn/main.pdf`
-2. **Technical report**: `{arxiv_id}_technical_report.md`
-3. **Source**: `paper_cn/` directory with all translated LaTeX files
+1. **Translated PDF**: `paper_cn/<main-file>.pdf`
+2. **Technical report**: `arXiv_${ARXIV_ID}/technical_report.md`
+3. **TeX Source**: `paper_cn/` directory with all translated LaTeX files
 
 ## Common Issues & Solutions
 
@@ -222,6 +222,7 @@ Spawn a subagent following [references/summary_prompt.md](references/summary_pro
 | Custom .sty/.cls files | Copy to `paper_cn/`, check for hard-coded English text |
 | `Missing $ inserted` in translated tables | Mixed CJK/Latin characters may cause xeCJK font switching errors (e.g. `(xyz)` be treated as math mode), restore original content in table cells | 
 | Undefined references (e.g., `\ref{fig:joint-train}`) | Ensure ALL referenced files are present in `paper_cn/`, even if NOT translated files. | 
+
 ## References
 
 - **Translation rules**: [references/translation_guidelines.md](references/translation_guidelines.md)
