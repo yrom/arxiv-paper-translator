@@ -60,11 +60,12 @@ npx skills add yrom/arxiv-paper-translator
 > /arxiv-paper-translator 翻译arXiv:2601.20802 为中文，同时整理核心观点输出一份中文博客用于分享
 ```
 
-### 一行指令翻译arxiv论文为中文
+## 一行指令翻译arxiv上的论文为中文
 
 ```bash
-claude -p "/arxiv-paper-translator 翻译arxiv:2602.05293。使用Docker镜像编译pdf。注意挂载正确的workspace给docker。如果.tex文件内容很多，注意派发subagent" --allowedTools "Read,Write,Edit,Bash,Task"
+claude -p "/arxiv-paper-translator 翻译arxiv:2602.04118为中文、Acknowledgement部分不翻译。使用Docker镜像编译pdf。注意挂载正确的workspace给docker。如果内容很多，可以派发subagent来并行处理。翻译完成需要整体review一下翻译后的内容的质量，特别关注术语一致性、学术性、专业性、正确性。" --allowedTools "Read,Write,Edit,Bash,Task"
 ```
+
 
 ## LICENSE
 
