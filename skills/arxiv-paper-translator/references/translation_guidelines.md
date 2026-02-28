@@ -297,6 +297,18 @@ paper_cn/              # Translated
 
 For detailed automated checks (file completeness, command spelling diff, CJK catcode scan, content spot-check), see [review_checklist.md](review_checklist.md).
 
+## Chinese Writing Guidelines
+
+Follow these guidelines for better readability:
+
+| 类别 | 规则 | 示例 |
+|------|------|------|
+| 去冗余词 | 避免"来"、"地"、"的"、"了"等非必要词 | `来表示` → `表示`；`隐式地` → `隐式` |
+| 精简主语 | 削减"我们"，用"本文"或无主语句 | `在本工作中，我们提出了X` → `本文提出的X` |
+| 去空洞修饰语 | 删空洞形容词，用数据代替 | `卓越的效率` → `速度快约100倍` |
+| 术语标注 | 英文标注统一 Title Case | `photometric loss` → `Photometric Loss` |
+| 句式精简 | 合并碎句，拆分长定语 | 三个"首先/然后/最后"短句 → 一句带顿号 |
+
 ## Handling Edge Cases
 
 ### Custom Macros
