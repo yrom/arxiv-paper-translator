@@ -1,3 +1,5 @@
+
+
 # arXiv 论文翻译SKILL
 
 这是一个用于将 arXiv 论文翻译为**中文**的 Agent SKILL。
@@ -39,6 +41,7 @@
 
 1. 可以运行 `xelatex` 工具用于编译 LaTeX 文档。
 2. **或者** 可以执行 `docker`， 使用 [TeXLive Docker 镜像](https://github.com/xu-cheng/latex-docker)来编译 LaTeX 文档。
+   > ⚠️ Apple Silicon (M1/M2/M3) 用户，请在 `docker run` 时添加 `--platform linux/amd64` 参数，否则可能因架构不匹配导致编译失败。
 
 > 如何在你电脑上安装这些工具请问你的AI助手😄 
 
